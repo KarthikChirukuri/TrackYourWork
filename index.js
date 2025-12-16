@@ -34,6 +34,12 @@ app.use(session({
     saveUninitialized: true
 }));
 
+app.use((req, res, next) => {
+  res.locals.userId = req.session.userId;
+  res.locals.username = req.session.username;
+  next();
+});
+
 app.get("/", ((req,res)=>{
     res.send(`This is root directory`);
 }));
@@ -79,18 +85,56 @@ app.post("/login", async (req, res) => {
 });
 
 
-app.get("/user", (req,res)=>{
-    res.render("homePage.ejs");
-})
-
-app.post("/addTodo", (req,res)=>{
-    console.log(req.body.todos);
-    if(req.session.username){
-        const user1 = user.findOne({name: req.session.username});
-
+app.get("/user", async(req,res)=>{
+    if (!req.session.userId) {
+        return res.redirect("/login");
     }
-    res.send("added task!");
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const work = await userWork.findOne({
+      userId: req.session.userId,
+      date: today
+    });
+
+    res.render("homePage.ejs", {work});
 })
+
+app.post("/addTodo", async (req, res) => {
+  if (!req.session.userId) {
+    return res.status(401).send("User not logged in");
+  }
+  const user1 = await User.findById(req.session.userId);
+  if (!user1) {
+    return res.status(404).send("User not found");
+  }
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  let work = await userWork.findOne({
+    userId: user1._id,
+    date: today
+  });
+
+  if (!work) {
+    work = new userWork({
+      userId: user1._id,
+      date: today,
+      tasks: []
+    });
+  }
+
+  work.tasks.push({
+    title: req.body.todos,
+    isCompleted: false
+  });
+
+  await work.save();
+  console.log("Saved work:", work);
+  res.redirect("/user");
+});
+
 
 app.listen(port, (req,res)=>{
     console.log("Connected to port 3000");
