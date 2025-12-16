@@ -1,0 +1,56 @@
+body {
+  margin: 0;
+  min-height: 100vh;
+
+  background-image: url("/images/BackgroundTodo.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  color: #996a3f;
+  font-family: "Cardo", serif;
+}
+
+/* ---------- Fonts ---------- */
+.cardo-regular {
+  font-weight: 400;
+  font-style: normal;
+}
+
+.cardo-bold {
+  font-weight: 700;
+  font-style: normal;
+}
+
+.cardo-regular-italic {
+  font-weight: 400;
+  font-style: italic;
+}
+
+/* ---------- Page layout ---------- */
+.page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;     /* vertical center */
+}
+
+/* ---------- Beige box ---------- */
+.beige_box {
+  width: 380px;
+  height: 60vh;
+
+  background-color: #eaded4; /* soft beige */
+  border-radius: 14px;
+
+  margin-left: auto;       /* move to right */
+  margin-right: 80px;
+
+  padding: 30px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* center content vertically */
+  align-items: center;     /* center content horizontally */
+
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}

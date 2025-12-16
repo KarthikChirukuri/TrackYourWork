@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>User Dashboard</title>
+
+    <!-- Google Font: CARDO -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cardo:ital,wght@0,400;0,700;1,400&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+
+  <body class="cardo-regular">
+    <div class="page">
+      <div class="beige_box">
+        <h1 class="cardo-bold">Welcome 👋</h1>
+        <h3 class="cardo-regular">Your Todo List</h3>
+        <div class="tasks">
+            <form method="post" action="/addTodo">
+                <input placeholder="Enter Task " name="todos">
+                <button type="submit">add</button>
+            </form>
+        </div>
+        <p></p>
+
+        <!-- performance stats -->
+      </div>
+    </div>
+  </body>
+</html>
