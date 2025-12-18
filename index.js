@@ -135,6 +135,37 @@ app.post("/addTodo", async (req, res) => {
   res.redirect("/user");
 });
 
+app.post("/toggleTodo", async (req, res) => {
+  if (!req.session.userId) {
+    return res.status(401).send("Not logged in");
+  }
+
+  const { taskId } = req.body;
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const work = await userWork.findOne({
+    userId: req.session.userId,
+    date: today
+  });
+
+  if (!work) {
+    return res.redirect("/user");
+  }
+
+  const task = work.tasks.id(taskId);
+  if (!task) {
+    return res.redirect("/user");
+  }
+
+  task.isCompleted = !task.isCompleted;
+  await work.save();
+
+  res.redirect("/user");
+});
+
+
 
 app.listen(port, (req,res)=>{
     console.log("Connected to port 3000");

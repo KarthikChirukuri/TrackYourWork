@@ -20,34 +20,65 @@
   <body class="cardo-regular">
     <div class="page">
       <div class="beige_box">
+
+        <!-- Heading -->
         <h1 class="cardo-bold">Welcome 👋</h1>
         <h3 class="cardo-regular">Your Todo List</h3>
+
         <div class="tasks">
+
+          <!-- Add Todo -->
           <div class="addtask">
-            <form method="post" action="/addTodo">
-              <input placeholder="Enter Task " name="todos" />
-              <button type="submit">add</button>
+            <form method="POST" action="/addTodo">
+              <input
+                type="text"
+                name="todos"
+                placeholder="Enter task"
+                required
+              />
+              <button type="submit">Add</button>
             </form>
           </div>
+
+          <!-- Todo List -->
           <div class="addToPage">
             <% if (work && work.tasks.length > 0) { %>
-            <ul>
-              <% for (let todo of work.tasks) { %>
-              <li>
-                <input type="checkbox" <%= todo.isCompleted ? "checked" : "" %>
-                />
-                <span><%= todo.title %></span>
-              </li>
-              <% } %>
-            </ul>
+              <ul>
+                <% for (let todo of work.tasks) { %>
+                  <li>
+
+                    <!-- Toggle Todo -->
+                    <form
+                      method="POST"
+                      action="/toggleTodo"
+                      style="display:inline"
+                    >
+                      <input
+                        type="hidden"
+                        name="taskId"
+                        value="<%= todo._id %>"
+                      />
+
+                      <input
+                        type="checkbox"
+                        onchange="this.form.submit()"
+                        <%= todo.isCompleted ? "checked" : "" %>
+                      />
+
+                      <span class="<%= todo.isCompleted ? 'completed' : '' %>">
+                        <%= todo.title %>
+                      </span>
+                    </form>
+
+                  </li>
+                <% } %>
+              </ul>
             <% } else { %>
-            <p>No tasks added for today</p>
+              <p>No tasks added for today</p>
             <% } %>
           </div>
-        </div>
-        <p></p>
 
-        <!-- performance stats -->
+        </div>
       </div>
     </div>
   </body>

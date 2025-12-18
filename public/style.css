@@ -1,3 +1,4 @@
+/* ---------- Global ---------- */
 body {
   margin: 0;
   min-height: 100vh;
@@ -31,7 +32,7 @@ body {
 .page {
   min-height: 100vh;
   display: flex;
-  align-items: center;     /* vertical center */
+  align-items: center; /* vertical center */
 }
 
 /* ---------- Beige box ---------- */
@@ -42,21 +43,86 @@ body {
   background-color: #eaded4; /* soft beige */
   border-radius: 14px;
 
-  margin-left: auto;       /* move to right */
+  margin-left: auto; /* move to right */
   margin-right: 80px;
 
   padding: 30px;
 
   display: flex;
   flex-direction: column;
-  justify-content: center; /* center content vertically */
-  align-items: center;     /* center content horizontally */
 
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }
 
+/* ---------- Headings ---------- */
+.beige_box h1,
+.beige_box h3 {
+  text-align: center;
+  margin: 0 0 15px 0;
+}
+
+/* ---------- Tasks section ---------- */
+.tasks {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---------- Add task ---------- */
+.addtask {
+  margin-bottom: 20px;
+}
+
+.addtask form {
+  display: flex;
+  gap: 10px;
+}
+
+.addtask input {
+  flex: 1;
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid #c4a484;
+  outline: none;
+  font-family: inherit;
+}
+
+.addtask button {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+  background-color: #996a3f;
+  color: white;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.addtask button:hover {
+  opacity: 0.9;
+}
+
+/* ---------- Todo list ---------- */
 .tasks ul {
   list-style: none;
   padding: 0;
   margin: 0;
+}
+
+.tasks li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+/* ---------- Completed task ---------- */
+.completed {
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+
+/* ---------- Checkbox ---------- */
+.tasks input[type="checkbox"] {
+  cursor: pointer;
 }
