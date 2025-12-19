@@ -18,15 +18,58 @@
   </head>
 
   <body class="cardo-regular">
+    <!-- Unplanned Box -->
+    <div class="unplanned">
+      <div class="unplannedBox"></div>
+    </div>
+
+    <!-- Date & Time overlay -->
+    <div class="dateTime">
+      <div class="dateTimeBox">
+        <p id="currentDate"></p>
+        <p id="currentTime"></p>
+      </div>
+    </div>
+
+    <!-- Calender Box -->
+     <div class="calender">
+  <div class="calenderBox">
+    <div class="cal-header">
+      <button id="prevMonth">‹</button>
+      <p id="monthYear"></p>
+      <button id="nextMonth">›</button>
+    </div>
+
+    <div class="cal-days">
+      <span>Sun</span>
+      <span>Mon</span>
+      <span>Tue</span>
+      <span>Wed</span>
+      <span>Thu</span>
+      <span>Fri</span>
+      <span>Sat</span>
+    </div>
+
+    <div class="cal-dates" id="calDates"></div>
+  </div>
+</div>
+
+
+    <!-- Timer Box -->
+    <div class="timer">
+      <p id="timerDisplay">1:00</p>
+      <button id="startBtn">Start</button>
+      <p id="timerMsg"></p>
+    </div>
+
+    <!-- Task List Box -->
     <div class="page">
       <div class="beige_box">
-
         <!-- Heading -->
         <h1 class="cardo-bold">Welcome 👋</h1>
         <h3 class="cardo-regular">Your Todo List</h3>
 
         <div class="tasks">
-
           <!-- Add Todo -->
           <div class="addtask">
             <form method="POST" action="/addTodo">
@@ -43,43 +86,164 @@
           <!-- Todo List -->
           <div class="addToPage">
             <% if (work && work.tasks.length > 0) { %>
-              <ul>
-                <% for (let todo of work.tasks) { %>
-                  <li>
+            <ul>
+              <% for (let todo of work.tasks) { %>
+              <li>
+                <!-- Toggle Todo -->
+                <form
+                  method="POST"
+                  action="/toggleTodo"
+                  style="display: inline"
+                >
+                  <input type="hidden" name="taskId" value="<%= todo._id %>" />
 
-                    <!-- Toggle Todo -->
-                    <form
-                      method="POST"
-                      action="/toggleTodo"
-                      style="display:inline"
-                    >
-                      <input
-                        type="hidden"
-                        name="taskId"
-                        value="<%= todo._id %>"
-                      />
+                  <input type="checkbox" onchange="this.form.submit()" <%=
+                  todo.isCompleted ? "checked" : "" %> />
 
-                      <input
-                        type="checkbox"
-                        onchange="this.form.submit()"
-                        <%= todo.isCompleted ? "checked" : "" %>
-                      />
-
-                      <span class="<%= todo.isCompleted ? 'completed' : '' %>">
-                        <%= todo.title %>
-                      </span>
-                    </form>
-
-                  </li>
-                <% } %>
-              </ul>
+                  <span class="<%= todo.isCompleted ? 'completed' : '' %>">
+                    <%= todo.title %>
+                  </span>
+                </form>
+              </li>
+              <% } %>
+            </ul>
             <% } else { %>
-              <p>No tasks added for today</p>
+            <p>No tasks added for today</p>
             <% } %>
           </div>
-
         </div>
       </div>
     </div>
+
+    <!-- Script here -->
+    <script>
+      /* ---------------- DATE & TIME ---------------- */
+      function updateDateTime() {
+        const now = new Date();
+
+        const date = now.toLocaleDateString("en-IN", {
+          weekday: "short",
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+        });
+
+        const time = now.toLocaleTimeString("en-IN", {
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+        });
+
+        document.getElementById("currentDate").textContent = date;
+        document.getElementById("currentTime").textContent = time;
+      }
+
+      updateDateTime();
+      setInterval(updateDateTime, 1000);
+
+      /* ---------------- FOCUS TIMER ---------------- */
+      let focusTime = 1 * 60; // 25 minutes
+      let timerInterval;
+
+      const timerDisplay = document.getElementById("timerDisplay");
+      const startBtn = document.getElementById("startBtn");
+      const timerMsg = document.getElementById("timerMsg");
+
+      function startTimer() {
+        // prevent multiple clicks
+        if (timerInterval) return;
+
+        timerMsg.textContent = "Focus started ⏳";
+
+        timerInterval = setInterval(() => {
+          if (focusTime <= 0) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+            timerMsg.textContent = "Focus period completed 🔔";
+            playAlarm();
+            return;
+          }
+
+          focusTime--;
+
+          let minutes = Math.floor(focusTime / 60);
+          let seconds = focusTime % 60;
+
+          timerDisplay.textContent =
+            String(minutes).padStart(2, "0") +
+            ":" +
+            String(seconds).padStart(2, "0");
+        }, 1000);
+      }
+
+      startBtn.addEventListener("click", startTimer);
+
+      function playAlarm() {
+        const alarm = new Audio("/sounds/alarm.mp3");
+        alarm.play();
+      }
+
+
+
+      /* ---------------- CALENDAR ---------------- */
+  const monthYear = document.getElementById("monthYear");
+  const calDates = document.getElementById("calDates");
+  const prevMonth = document.getElementById("prevMonth");
+  const nextMonth = document.getElementById("nextMonth");
+
+  let currentCalDate = new Date();
+
+  function renderCalendar() {
+    calDates.innerHTML = "";
+
+    const year = currentCalDate.getFullYear();
+    const month = currentCalDate.getMonth();
+
+    const firstDay = new Date(year, month, 1).getDay();
+    const lastDate = new Date(year, month + 1, 0).getDate();
+
+    const today = new Date();
+
+    monthYear.textContent = currentCalDate.toLocaleDateString("en-IN", {
+      month: "long",
+      year: "numeric",
+    });
+
+    // Empty cells before first date
+    for (let i = 0; i < firstDay; i++) {
+      calDates.appendChild(document.createElement("span"));
+    }
+
+    // Dates
+    for (let d = 1; d <= lastDate; d++) {
+      const dateEl = document.createElement("span");
+      dateEl.textContent = d;
+
+      if (
+        d === today.getDate() &&
+        month === today.getMonth() &&
+        year === today.getFullYear()
+      ) {
+        dateEl.classList.add("today");
+      }
+
+      calDates.appendChild(dateEl);
+    }
+  }
+
+  prevMonth.addEventListener("click", () => {
+    currentCalDate.setMonth(currentCalDate.getMonth() - 1);
+    renderCalendar();
+  });
+
+  nextMonth.addEventListener("click", () => {
+    currentCalDate.setMonth(currentCalDate.getMonth() + 1);
+    renderCalendar();
+  });
+
+  renderCalendar();
+
+      
+    </script>
   </body>
 </html>

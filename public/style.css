@@ -126,3 +126,221 @@ body {
 .tasks input[type="checkbox"] {
   cursor: pointer;
 }
+
+/* Unplanned Box */
+.unplanned {
+  position: absolute;
+  top: 120px;
+  left: 27rem;
+  z-index: 10;
+}
+
+.unplannedBox{
+  width: 300px;
+  height: 150px;
+
+  background-image: url("/images/ThinkingBox.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  border-radius: 12px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  /* color: #6b4b2f; */
+  color: #ffffff;
+  font-family: "Cardo", serif;
+}
+
+/* ---------- Date & Time Overlay ---------- */
+.dateTime {
+  position: absolute;
+  top: 120px;
+  left: 80px;
+  z-index: 10;
+}
+
+.dateTimeBox {
+  width: 300px;
+  height: 150px;
+
+  background-image: url("/images/DateTime.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  border-radius: 12px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  /* color: #6b4b2f; */
+  color: #ffffff;
+  font-family: "Cardo", serif;
+}
+
+/* Date */
+#currentDate {
+  font-size: 22px;
+  font-weight: 800;
+  margin: 0;
+}
+
+/* Time */
+#currentTime {
+  font-size: 24px;
+  font-weight: 800;
+  margin: 2px 0 0 0;
+}
+
+/* ---------- Timer Box ---------- */
+.timer {
+  position: absolute;
+
+  top: 120px;          /* same as unplanned */
+  left: calc(25rem + 390px);  /* 300px width + 20px gap */
+
+  z-index: 10;
+
+  width: 300px;
+  padding: 12px;
+
+  background-color: #eaded4;
+  border-radius: 14px;
+
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Timer display */
+#timerDisplay {
+  font-size: 36px;
+  font-weight: 800;
+  margin: 0 0 15px 0;
+  color: #6b4b2f;
+}
+
+/* Start button */
+#startBtn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+
+  background-color: #996a3f;
+  color: white;
+
+  font-family: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+#startBtn:hover {
+  opacity: 0.9;
+}
+
+/* Timer message */
+#timerMsg {
+  margin-top: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #6b4b2f;
+}
+
+/* calender Box */
+.calender{
+  color: #ffffff;
+  
+}
+
+/* ---------- Calendar ---------- */
+/* ---------- Calendar ---------- */
+.calender {
+  position: absolute;
+
+  top: 300px;      /* below DateTime & Unplanned */
+  left: 80px;      /* same as DateTime left */
+
+  z-index: 10;
+}
+
+.calenderBox {
+  width: 660px;
+  height: 420px;          /* ⬆️ increased height */
+
+  padding: 40px;         /* ➕ more inner space */
+
+  background-color: #eaded4;
+  border-radius: 16px;
+
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+
+  font-family: "Cardo", serif;
+  color: #6b4b2f;
+
+  box-sizing: border-box; /* IMPORTANT */
+}
+
+/* Header */
+.cal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.cal-header button {
+  border: none;
+  background: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: #6b4b2f;
+}
+
+#monthYear {
+  font-weight: 700;
+}
+
+/* Days */
+.cal-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  font-size: 12px;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 6px;
+}
+
+/* Dates */
+.cal-dates {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+  gap: 6px;
+}
+
+.cal-dates span {
+  padding: 6px 0;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.cal-dates span:hover {
+  background-color: #996a3f;
+  color: white;
+}
+
+.today {
+  background-color: #996a3f;
+  color: white;
+  font-weight: 700;
+}
