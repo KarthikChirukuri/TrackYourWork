@@ -262,7 +262,7 @@ body {
   
 }
 
-/* ---------- Calendar ---------- */
+
 /* ---------- Calendar ---------- */
 .calender {
   position: absolute;
@@ -284,7 +284,7 @@ body {
 
   box-shadow: 0 10px 30px rgba(0,0,0,0.2);
 
-  font-family: "Cardo", serif;
+  font-family: "Cardo-bold", serif;
   color: #6b4b2f;
 
   box-sizing: border-box; /* IMPORTANT */

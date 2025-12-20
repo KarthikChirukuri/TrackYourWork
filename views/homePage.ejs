@@ -32,28 +32,27 @@
     </div>
 
     <!-- Calender Box -->
-     <div class="calender">
-  <div class="calenderBox">
-    <div class="cal-header">
-      <button id="prevMonth">‹</button>
-      <p id="monthYear"></p>
-      <button id="nextMonth">›</button>
+    <div class="calender">
+      <div class="calenderBox">
+        <div class="cal-header">
+          <button id="prevMonth">‹</button>
+          <p id="monthYear"></p>
+          <button id="nextMonth">›</button>
+        </div>
+
+        <div class="cal-days">
+          <span>Sun</span>
+          <span>Mon</span>
+          <span>Tue</span>
+          <span>Wed</span>
+          <span>Thu</span>
+          <span>Fri</span>
+          <span>Sat</span>
+        </div>
+
+        <div class="cal-dates" id="calDates"></div>
+      </div>
     </div>
-
-    <div class="cal-days">
-      <span>Sun</span>
-      <span>Mon</span>
-      <span>Tue</span>
-      <span>Wed</span>
-      <span>Thu</span>
-      <span>Fri</span>
-      <span>Sat</span>
-    </div>
-
-    <div class="cal-dates" id="calDates"></div>
-  </div>
-</div>
-
 
     <!-- Timer Box -->
     <div class="timer">
@@ -117,6 +116,7 @@
 
     <!-- Script here -->
     <script>
+      
       /* ---------------- DATE & TIME ---------------- */
       function updateDateTime() {
         const now = new Date();
@@ -140,6 +140,7 @@
 
       updateDateTime();
       setInterval(updateDateTime, 1000);
+
 
       /* ---------------- FOCUS TIMER ---------------- */
       let focusTime = 1 * 60; // 25 minutes
@@ -184,66 +185,63 @@
       }
 
 
-
       /* ---------------- CALENDAR ---------------- */
-  const monthYear = document.getElementById("monthYear");
-  const calDates = document.getElementById("calDates");
-  const prevMonth = document.getElementById("prevMonth");
-  const nextMonth = document.getElementById("nextMonth");
+      const monthYear = document.getElementById("monthYear");
+      const calDates = document.getElementById("calDates");
+      const prevMonth = document.getElementById("prevMonth");
+      const nextMonth = document.getElementById("nextMonth");
 
-  let currentCalDate = new Date();
+      let currentCalDate = new Date();
 
-  function renderCalendar() {
-    calDates.innerHTML = "";
+      function renderCalendar() {
+        calDates.innerHTML = "";
 
-    const year = currentCalDate.getFullYear();
-    const month = currentCalDate.getMonth();
+        const year = currentCalDate.getFullYear();
+        const month = currentCalDate.getMonth();
 
-    const firstDay = new Date(year, month, 1).getDay();
-    const lastDate = new Date(year, month + 1, 0).getDate();
+        const firstDay = new Date(year, month, 1).getDay();
+        const lastDate = new Date(year, month + 1, 0).getDate();
 
-    const today = new Date();
+        const today = new Date();
 
-    monthYear.textContent = currentCalDate.toLocaleDateString("en-IN", {
-      month: "long",
-      year: "numeric",
-    });
+        monthYear.textContent = currentCalDate.toLocaleDateString("en-IN", {
+          month: "long",
+          year: "numeric",
+        });
 
-    // Empty cells before first date
-    for (let i = 0; i < firstDay; i++) {
-      calDates.appendChild(document.createElement("span"));
-    }
+        // Empty cells before first date
+        for (let i = 0; i < firstDay; i++) {
+          calDates.appendChild(document.createElement("span"));
+        }
 
-    // Dates
-    for (let d = 1; d <= lastDate; d++) {
-      const dateEl = document.createElement("span");
-      dateEl.textContent = d;
+        // Dates
+        for (let d = 1; d <= lastDate; d++) {
+          const dateEl = document.createElement("span");
+          dateEl.textContent = d;
 
-      if (
-        d === today.getDate() &&
-        month === today.getMonth() &&
-        year === today.getFullYear()
-      ) {
-        dateEl.classList.add("today");
+          if (
+            d === today.getDate() &&
+            month === today.getMonth() &&
+            year === today.getFullYear()
+          ) {
+            dateEl.classList.add("today");
+          }
+
+          calDates.appendChild(dateEl);
+        }
       }
 
-      calDates.appendChild(dateEl);
-    }
-  }
+      prevMonth.addEventListener("click", () => {
+        currentCalDate.setMonth(currentCalDate.getMonth() - 1);
+        renderCalendar();
+      });
 
-  prevMonth.addEventListener("click", () => {
-    currentCalDate.setMonth(currentCalDate.getMonth() - 1);
-    renderCalendar();
-  });
+      nextMonth.addEventListener("click", () => {
+        currentCalDate.setMonth(currentCalDate.getMonth() + 1);
+        renderCalendar();
+      });
 
-  nextMonth.addEventListener("click", () => {
-    currentCalDate.setMonth(currentCalDate.getMonth() + 1);
-    renderCalendar();
-  });
-
-  renderCalendar();
-
-      
+      renderCalendar();
     </script>
   </body>
 </html>
