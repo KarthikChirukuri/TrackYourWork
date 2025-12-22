@@ -115,15 +115,30 @@
     </div>
 
     <!-- Weekly Progress -->
-     <div class="doneTasksRatio">
-      <div class="todaysRatio"></div>
-      <div class="weeksRatio"></div>
-      <div class="monthlyRatio"></div>
-     </div>
+    <div class="doneTasksRatio">
+      <% const todayTasks = work ? work.tasks : []; const todayCompleted =
+      todayTasks.filter(t => t.isCompleted).length; %>
+
+      <!-- Today -->
+      <div class="todaysRatio cardo-bold">
+        Tasks Done Today: <%= todayCompleted %> / <%= todayTasks.length %>
+      </div>
+
+      <!-- Last 7 Days -->
+      <div class="weeksRatio">
+        Tasks Done (Last 7 Days): <%= totalLast7Days === 0 ? "0 / 0" :
+        completedLast7Days + " / " + totalLast7Days %>
+      </div>
+
+      <!-- Monthly (placeholder for now) -->
+      <div class="monthlyRatio">
+        Tasks Done This Month: <%= totalLast30Days === 0 ? "0 / 0" :
+        completedLast30Days + " / " + totalLast30Days %>
+      </div>
+    </div>
 
     <!-- Script here -->
     <script>
-      
       /* ---------------- DATE & TIME ---------------- */
       function updateDateTime() {
         const now = new Date();
@@ -147,7 +162,6 @@
 
       updateDateTime();
       setInterval(updateDateTime, 1000);
-
 
       /* ---------------- FOCUS TIMER ---------------- */
       let focusTime = 1 * 60; // 25 minutes
@@ -190,7 +204,6 @@
         const alarm = new Audio("/sounds/alarm.mp3");
         alarm.play();
       }
-
 
       /* ---------------- CALENDAR ---------------- */
       const monthYear = document.getElementById("monthYear");

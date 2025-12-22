@@ -1,17 +1,18 @@
-const express = require('express');
+const express = require("express");
 const app = express();
 const port = 3000;
 
-const mongoose = require('mongoose');
-const User = require('./models/user');
-const userWork = require('./models/userWork');
+const mongoose = require("mongoose");
+const User = require("./models/user");
+const userWork = require("./models/userWork");
 
-mongoose.connect("mongodb://127.0.0.1:27017/ToDoDB")
-    .then(() => console.log("MongoDB Connected"))
-    .catch(err => console.log(err));
+mongoose
+  .connect("mongodb://127.0.0.1:27017/ToDoDB")
+  .then(() => console.log("MongoDB Connected"))
+  .catch((err) => console.log(err));
 
 app.set("view engine", "ejs");
-		
+
 const path = require("path");
 app.set("views", path.join(__dirname, "/views"));
 
@@ -21,18 +22,20 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-const methodOverride = require('method-override');
-app.use(methodOverride('_method'));
+const methodOverride = require("method-override");
+app.use(methodOverride("_method"));
 
 const cookieParser = require("cookie-parser");
 app.use(cookieParser());
 
 const session = require("express-session");
-app.use(session({
+app.use(
+  session({
     secret: "mysupersecretstring",
     resave: false,
-    saveUninitialized: true
-}));
+    saveUninitialized: true,
+  })
+);
 
 app.use((req, res, next) => {
   res.locals.userId = req.session.userId;
@@ -40,33 +43,33 @@ app.use((req, res, next) => {
   next();
 });
 
-app.get("/", ((req,res)=>{
-    res.send(`This is root directory`);
-}));
+app.get("/", (req, res) => {
+  res.send(`This is root directory`);
+});
 
-app.get("/signUp", (req,res)=>{
-    res.render("signUp.ejs");
-})
+app.get("/signUp", (req, res) => {
+  res.render("signUp.ejs");
+});
 
-app.post("/signUp", async (req,res)=>{
-    console.log(req.body.username);
-    let user1 = await User.findOne({email: req.body.email});
-    if(!user1){
-        await User.create({
-            name: req.body.username,
-            email: req.body.email,
-            password: req.body.password
-        })
+app.post("/signUp", async (req, res) => {
+  console.log(req.body.username);
+  let user1 = await User.findOne({ email: req.body.email });
+  if (!user1) {
+    await User.create({
+      name: req.body.username,
+      email: req.body.email,
+      password: req.body.password,
+    });
 
-        res.redirect("/login");
-    }else{
-        res.send("User exists please signup again, do reload!");
-    }
-})
+    res.redirect("/login");
+  } else {
+    res.send("User exists please signup again, do reload!");
+  }
+});
 
-app.get("/login", (req,res)=>{
-    res.render("login.ejs");
-})
+app.get("/login", (req, res) => {
+  res.render("login.ejs");
+});
 
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;
@@ -74,7 +77,7 @@ app.post("/login", async (req, res) => {
   if (!user1) {
     return res.send("User does not exist");
   }
-  
+
   //change password later using not created just for testing purpose
   if (user1.password !== password) {
     return res.send("Wrong password");
@@ -84,22 +87,66 @@ app.post("/login", async (req, res) => {
   res.redirect("/user");
 });
 
+app.get("/user", async (req, res) => {
+  if (!req.session.userId) {
+    return res.redirect("/login");
+  }
 
-app.get("/user", async(req,res)=>{
-    if (!req.session.userId) {
-        return res.redirect("/login");
-    }
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+  // today work
+  const work = await userWork.findOne({
+    userId: req.session.userId,
+    date: today,
+  });
 
-    const work = await userWork.findOne({
-      userId: req.session.userId,
-      date: today
-    });
+  // last 7 days date
+  const last7Days = new Date();
+  last7Days.setDate(last7Days.getDate() - 7);
+  last7Days.setHours(0, 0, 0, 0);
 
-    res.render("homePage.ejs", {work});
-})
+  // works of last 7 days
+  const last7DaysWorks = await userWork.find({
+    userId: req.session.userId,
+    date: { $gte: last7Days },
+  });
+
+  let completedLast7Days = 0;
+  let totalLast7Days = 0;
+
+  last7DaysWorks.forEach((w) => {
+    totalLast7Days += w.tasks.length;
+    completedLast7Days += w.tasks.filter((t) => t.isCompleted).length;
+  });
+
+  //last 30 days
+  const last30Days = new Date();
+  last30Days.setDate(last30Days.getDate()-30);
+  last30Days.setHours(0, 0, 0, 0);
+
+  //works for last 30 days
+  const last30daysWorks = await userWork.find({
+    userId: req.session.userId,
+    date: {$gte: last30Days},
+  })
+
+  let completedLast30Days = 0;
+  let totalLast30Days = 0;
+
+  last30daysWorks.forEach((w)=>{
+    totalLast30Days += w.tasks.length;
+    completedLast30Days += w.tasks.filter((t) => t.isCompleted).length;
+  });
+
+  res.render("homePage.ejs", {
+    work,
+    completedLast7Days,
+    totalLast7Days,
+    completedLast30Days,
+    totalLast30Days
+  });
+});
 
 app.post("/addTodo", async (req, res) => {
   if (!req.session.userId) {
@@ -114,20 +161,20 @@ app.post("/addTodo", async (req, res) => {
 
   let work = await userWork.findOne({
     userId: user1._id,
-    date: today
+    date: today,
   });
 
   if (!work) {
     work = new userWork({
       userId: user1._id,
       date: today,
-      tasks: []
+      tasks: [],
     });
   }
 
   work.tasks.push({
     title: req.body.todos,
-    isCompleted: false
+    isCompleted: false,
   });
 
   await work.save();
@@ -147,7 +194,7 @@ app.post("/toggleTodo", async (req, res) => {
 
   const work = await userWork.findOne({
     userId: req.session.userId,
-    date: today
+    date: today,
   });
 
   if (!work) {
@@ -165,8 +212,6 @@ app.post("/toggleTodo", async (req, res) => {
   res.redirect("/user");
 });
 
-
-
-app.listen(port, (req,res)=>{
-    console.log("Connected to port 3000");
-})
+app.listen(port, (req, res) => {
+  console.log("Connected to port 3000");
+});
