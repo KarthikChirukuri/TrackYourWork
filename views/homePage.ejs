@@ -31,7 +31,7 @@
       </div>
     </div>
 
-    <!-- Calender Box -->
+    <!-- Calendar Box -->
     <div class="calender">
       <div class="calenderBox">
         <div class="cal-header">
@@ -41,13 +41,8 @@
         </div>
 
         <div class="cal-days">
-          <span>Sun</span>
-          <span>Mon</span>
-          <span>Tue</span>
-          <span>Wed</span>
-          <span>Thu</span>
-          <span>Fri</span>
-          <span>Sat</span>
+          <span>Sun</span><span>Mon</span><span>Tue</span>
+          <span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
         </div>
 
         <div class="cal-dates" id="calDates"></div>
@@ -56,7 +51,7 @@
 
     <!-- Timer Box -->
     <div class="timer">
-      <p id="timerDisplay">1:00</p>
+      <p id="timerDisplay">01:00</p>
       <button id="startBtn">Start</button>
       <p id="timerMsg"></p>
     </div>
@@ -64,41 +59,27 @@
     <!-- Task List Box -->
     <div class="page">
       <div class="beige_box">
-        <!-- Heading -->
         <h1 class="cardo-bold">Welcome 👋</h1>
         <h3 class="cardo-regular">Your Todo List</h3>
 
         <div class="tasks">
-          <!-- Add Todo -->
           <div class="addtask">
             <form method="POST" action="/addTodo">
-              <input
-                type="text"
-                name="todos"
-                placeholder="Enter task"
-                required
-              />
+              <input type="text" name="todos" placeholder="Enter task" required />
               <button type="submit">Add</button>
             </form>
           </div>
 
-          <!-- Todo List -->
           <div class="addToPage">
             <% if (work && work.tasks.length > 0) { %>
             <ul>
               <% for (let todo of work.tasks) { %>
               <li>
-                <!-- Toggle Todo -->
-                <form
-                  method="POST"
-                  action="/toggleTodo"
-                  style="display: inline"
-                >
+                <form method="POST" action="/toggleTodo" style="display:inline">
                   <input type="hidden" name="taskId" value="<%= todo._id %>" />
-
-                  <input type="checkbox" onchange="this.form.submit()" <%=
-                  todo.isCompleted ? "checked" : "" %> />
-
+                  <input type="checkbox"
+                    onchange="this.form.submit()"
+                    <%= todo.isCompleted ? "checked" : "" %> />
                   <span class="<%= todo.isCompleted ? 'completed' : '' %>">
                     <%= todo.title %>
                   </span>
@@ -114,57 +95,34 @@
       </div>
     </div>
 
-    <!-- Weekly Progress -->
-    <div class="doneTasksRatio">
-      <% const todayTasks = work ? work.tasks : []; const todayCompleted =
-      todayTasks.filter(t => t.isCompleted).length; %>
-
-      <!-- Today -->
-      <div class="todaysRatio cardo-bold">
-        Tasks Done Today: <%= todayCompleted %> / <%= todayTasks.length %>
-      </div>
-
-      <!-- Last 7 Days -->
-      <div class="weeksRatio">
-        Tasks Done (Last 7 Days): <%= totalLast7Days === 0 ? "0 / 0" :
-        completedLast7Days + " / " + totalLast7Days %>
-      </div>
-
-      <!-- Monthly (placeholder for now) -->
-      <div class="monthlyRatio">
-        Tasks Done This Month: <%= totalLast30Days === 0 ? "0 / 0" :
-        completedLast30Days + " / " + totalLast30Days %>
-      </div>
-    </div>
-
-    <!-- Script here -->
+    <!-- Script -->
     <script>
       /* ---------------- DATE & TIME ---------------- */
       function updateDateTime() {
         const now = new Date();
+        document.getElementById("currentDate").textContent =
+          now.toLocaleDateString("en-IN", {
+            weekday: "short",
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+          });
 
-        const date = now.toLocaleDateString("en-IN", {
-          weekday: "short",
-          day: "2-digit",
-          month: "short",
-          year: "numeric",
-        });
-
-        const time = now.toLocaleTimeString("en-IN", {
-          hour: "2-digit",
-          minute: "2-digit",
-          second: "2-digit",
-        });
-
-        document.getElementById("currentDate").textContent = date;
-        document.getElementById("currentTime").textContent = time;
+        document.getElementById("currentTime").textContent =
+          now.toLocaleTimeString("en-IN", {
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+          });
       }
-
       updateDateTime();
       setInterval(updateDateTime, 1000);
 
-      /* ---------------- FOCUS TIMER ---------------- */
-      let focusTime = 1 * 60; // 25 minutes
+      /* ---------------- AUDIO (FIXED) ---------------- */
+      const alarm = new Audio("/sounds/alarm.wav");
+
+      /* ---------------- TIMER ---------------- */
+      let focusTime = 60;
       let timerInterval;
 
       const timerDisplay = document.getElementById("timerDisplay");
@@ -172,8 +130,13 @@
       const timerMsg = document.getElementById("timerMsg");
 
       function startTimer() {
-        // prevent multiple clicks
         if (timerInterval) return;
+
+        // unlock audio (browser requirement)
+        alarm.play().then(() => {
+          alarm.pause();
+          alarm.currentTime = 0;
+        }).catch(() => {});
 
         timerMsg.textContent = "Focus started ⏳";
 
@@ -182,32 +145,24 @@
             clearInterval(timerInterval);
             timerInterval = null;
             timerMsg.textContent = "Focus period completed 🔔";
-            playAlarm();
+            alarm.play(); // 🔔 plays correctly now
             return;
           }
 
           focusTime--;
-
-          let minutes = Math.floor(focusTime / 60);
-          let seconds = focusTime % 60;
+          const m = Math.floor(focusTime / 60);
+          const s = focusTime % 60;
 
           timerDisplay.textContent =
-            String(minutes).padStart(2, "0") +
-            ":" +
-            String(seconds).padStart(2, "0");
+            String(m).padStart(2, "0") + ":" + String(s).padStart(2, "0");
         }, 1000);
       }
 
       startBtn.addEventListener("click", startTimer);
 
-      function playAlarm() {
-        const alarm = new Audio("/sounds/alarm.mp3");
-        alarm.play();
-      }
-
       /* ---------------- CALENDAR ---------------- */
-      const monthYear = document.getElementById("monthYear");
       const calDates = document.getElementById("calDates");
+      const monthYear = document.getElementById("monthYear");
       const prevMonth = document.getElementById("prevMonth");
       const nextMonth = document.getElementById("nextMonth");
 
@@ -218,10 +173,8 @@
 
         const year = currentCalDate.getFullYear();
         const month = currentCalDate.getMonth();
-
         const firstDay = new Date(year, month, 1).getDay();
         const lastDate = new Date(year, month + 1, 0).getDate();
-
         const today = new Date();
 
         monthYear.textContent = currentCalDate.toLocaleDateString("en-IN", {
@@ -229,22 +182,18 @@
           year: "numeric",
         });
 
-        // Empty cells before first date
         for (let i = 0; i < firstDay; i++) {
           calDates.appendChild(document.createElement("span"));
         }
 
-        // Dates
         for (let d = 1; d <= lastDate; d++) {
           const dateEl = document.createElement("span");
           dateEl.textContent = d;
+
           dateEl.addEventListener("click", () => {
             const selectedDate = new Date(year, month, d);
             selectedDate.setHours(0, 0, 0, 0);
-
-            const dateStr = selectedDate.toISOString().split("T")[0];
-
-            loadTasksByDate(dateStr);
+            loadTasksByDate(selectedDate.toISOString().split("T")[0]);
           });
 
           if (
@@ -259,15 +208,15 @@
         }
       }
 
-      prevMonth.addEventListener("click", () => {
+      prevMonth.onclick = () => {
         currentCalDate.setMonth(currentCalDate.getMonth() - 1);
         renderCalendar();
-      });
+      };
 
-      nextMonth.addEventListener("click", () => {
+      nextMonth.onclick = () => {
         currentCalDate.setMonth(currentCalDate.getMonth() + 1);
         renderCalendar();
-      });
+      };
 
       renderCalendar();
 
@@ -284,22 +233,17 @@
         }
 
         const ul = document.createElement("ul");
-
         data.tasks.forEach((task) => {
           const li = document.createElement("li");
-
           li.innerHTML = `
-      <form method="POST" action="/toggleTodo" style="display:inline">
-        <input type="hidden" name="taskId" value="${task._id}">
-        <input type="checkbox" ${
-          task.isCompleted ? "checked" : ""
-        } onchange="this.form.submit()">
-        <span class="${task.isCompleted ? "completed" : ""}">
-          ${task.title}
-        </span>
-      </form>
-    `;
-
+            <form method="POST" action="/toggleTodo" style="display:inline">
+              <input type="hidden" name="taskId" value="${task._id}">
+              <input type="checkbox" ${task.isCompleted ? "checked" : ""}
+                onchange="this.form.submit()">
+              <span class="${task.isCompleted ? "completed" : ""}">
+                ${task.title}
+              </span>
+            </form>`;
           ul.appendChild(li);
         });
 
