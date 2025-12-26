@@ -238,6 +238,14 @@
         for (let d = 1; d <= lastDate; d++) {
           const dateEl = document.createElement("span");
           dateEl.textContent = d;
+          dateEl.addEventListener("click", () => {
+            const selectedDate = new Date(year, month, d);
+            selectedDate.setHours(0, 0, 0, 0);
+
+            const dateStr = selectedDate.toISOString().split("T")[0];
+
+            loadTasksByDate(dateStr);
+          });
 
           if (
             d === today.getDate() &&
@@ -262,6 +270,41 @@
       });
 
       renderCalendar();
+
+      async function loadTasksByDate(dateStr) {
+        const res = await fetch(`/tasks?date=${dateStr}`);
+        const data = await res.json();
+
+        const taskContainer = document.querySelector(".addToPage");
+        taskContainer.innerHTML = "";
+
+        if (data.tasks.length === 0) {
+          taskContainer.innerHTML = "<p>No tasks for this date</p>";
+          return;
+        }
+
+        const ul = document.createElement("ul");
+
+        data.tasks.forEach((task) => {
+          const li = document.createElement("li");
+
+          li.innerHTML = `
+      <form method="POST" action="/toggleTodo" style="display:inline">
+        <input type="hidden" name="taskId" value="${task._id}">
+        <input type="checkbox" ${
+          task.isCompleted ? "checked" : ""
+        } onchange="this.form.submit()">
+        <span class="${task.isCompleted ? "completed" : ""}">
+          ${task.title}
+        </span>
+      </form>
+    `;
+
+          ul.appendChild(li);
+        });
+
+        taskContainer.appendChild(ul);
+      }
     </script>
   </body>
 </html>

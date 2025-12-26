@@ -212,6 +212,25 @@ app.post("/toggleTodo", async (req, res) => {
   res.redirect("/user");
 });
 
+app.get("/tasks", async (req, res) => {
+  if (!req.session.userId) {
+    return res.status(401).json({ tasks: [] });
+  }
+
+  const date = new Date(req.query.date);
+  date.setHours(0, 0, 0, 0);
+
+  const work = await userWork.findOne({
+    userId: req.session.userId,
+    date: date,
+  });
+
+  res.json({
+    tasks: work ? work.tasks : [],
+  });
+});
+
+
 app.listen(port, (req, res) => {
   console.log("Connected to port 3000");
 });
